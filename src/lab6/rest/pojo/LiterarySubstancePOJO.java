@@ -1,6 +1,6 @@
 package lab6.rest.pojo;
 
-public class SubstancePOJO {
+public class LiterarySubstancePOJO {
 
 
     private String substanceId;
@@ -8,7 +8,7 @@ public class SubstancePOJO {
     private String unit;
     private double treshold;
 
-    public SubstancePOJO(){}
+    public LiterarySubstancePOJO(){}
 
     public String getSubstanceId() {
         return substanceId;
