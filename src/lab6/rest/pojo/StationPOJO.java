@@ -6,12 +6,12 @@ public class StationPOJO {
 
     private String stationId;
     private Address stationAddress;
-    private List<LiterarySubstancePOJO> substances;
+    private List<SubstancePOJO> substances;
 
     public StationPOJO() {
     }
 
-    public StationPOJO(String stationId, Address stationAddress, List<LiterarySubstancePOJO> substances) {
+    public StationPOJO(String stationId, Address stationAddress, List<SubstancePOJO> substances) {
         this.stationId = stationId;
         this.stationAddress = stationAddress;
         this.substances = substances;
@@ -33,11 +33,11 @@ public class StationPOJO {
         this.stationAddress = stationAddress;
     }
 
-    public List<LiterarySubstancePOJO> getSubstances() {
+    public List<SubstancePOJO> getSubstances() {
         return substances;
     }
 
-    public void setSubstances(List<LiterarySubstancePOJO> substances) {
+    public void setSubstances(List<SubstancePOJO> substances) {
         this.substances = substances;
     }
 }

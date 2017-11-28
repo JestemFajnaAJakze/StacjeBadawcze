@@ -1,11 +1,11 @@
 package lab6.rest.pojo;
 
-public class Substance {
+public class SubstancePOJO {
     private String type;
     private String substanceName;
     private double value;
 
-    public Substance() {
+    public SubstancePOJO() {
     }
 
 
