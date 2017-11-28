@@ -17,6 +17,8 @@ import java.util.List;
 public class StationsREST {
     List<StationPOJO> stations = new ArrayList<StationPOJO>();
     List<LiterarySubstancePOJO> literarySubstances = new ArrayList<LiterarySubstancePOJO>();
+    //android pobiera te dwie listy i je razem wyśiwetla
+
 
     private static final String REST_URI = "http://localhost:8080/lab6_v2Web";
     private Client restClient;
@@ -26,9 +28,10 @@ public class StationsREST {
     }
 
     @POST
-    @Path("/airquality/{stationId}") //dodaje dane dla stacji pomiarowej o wskazanym id.
+    @Path("/airquality/{stationId}") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
     @Produces(MediaType.APPLICATION_JSON)
     public Response createStation(@PathParam("stationId")String stationId, StationPOJO stationPOJO) {
+        System.out.println("Otrzymano dane pomiarowe"); //TODO nadpisywanie danych o stacjach
         if(stationId.isEmpty() || stationPOJO.getStationAddress() == null || stationPOJO.getSubstances().isEmpty()){
             return Response.status(Response.Status.NO_CONTENT).build();
         } else {
