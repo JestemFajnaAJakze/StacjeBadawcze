@@ -2,6 +2,7 @@ package lab6.example.service;
 
 import lab6.rest.pojo.LiterarySubstancePOJO;
 import lab6.rest.pojo.StationPOJO;
+import lab6.rest.pojo.SubstancePOJO;
 
 import javax.inject.Singleton;
 import javax.ws.rs.*;
@@ -27,6 +28,18 @@ public class StationsREST {
     public StationsREST() {
     }
 
+    @GET
+    @Path("/airquality") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStations() {
+        return Response.ok(stations, MediaType.APPLICATION_JSON).build();
+    }
+//    @GET
+//    @Path("/airquality/{stationId") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getStations(@PathParam("stationId")String stationId) {
+//        return Response.ok(stations, MediaType.APPLICATION_JSON).build();
+//    }
     @POST
     @Path("/airquality/{stationId}") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
     @Produces(MediaType.APPLICATION_JSON)
@@ -37,6 +50,7 @@ public class StationsREST {
         } else {
             for (StationPOJO station : stations) {
                 if (station.getStationId().equals(stationId)) {
+                    station.setSubstances(stationPOJO.getSubstances());
                     return Response.status(Response.Status.CONFLICT).build();
                 }
             }
@@ -71,5 +85,28 @@ public class StationsREST {
         }
 
         return Response.status(Response.Status.CREATED).build();
+    }
+
+    @GET
+    @Path("/airquality/alarm") // 1 GET zwraca stacje gdzie przekrozono próg
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAlarmStations() {
+        List<StationPOJO> alarmStations = new ArrayList<>();
+        for (StationPOJO station : stations) {
+            for (SubstancePOJO substance : station.getSubstances()) {
+                LiterarySubstancePOJO literarySubstance = null;
+                for (LiterarySubstancePOJO literarySubstancePOJO : literarySubstances) {
+                    if(literarySubstancePOJO.getSubstanceId().equals(substance.getType())){
+                        literarySubstance = literarySubstancePOJO;
+                        break;
+                    }
+                }
+                if(substance.getValue() > literarySubstance.getTreshold()){
+                    alarmStations.add(station);
+                    break;
+                }
+            }
+        }
+        return Response.ok(alarmStations, MediaType.APPLICATION_JSON).build();
     }
 }
