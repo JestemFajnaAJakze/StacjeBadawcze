@@ -1,5 +1,6 @@
 package lab6.example.service;
 
+import lab6.example.PATCH;
 import lab6.rest.pojo.LiterarySubstancePOJO;
 import lab6.rest.pojo.StationPOJO;
 import lab6.rest.pojo.SubstancePOJO;
@@ -62,6 +63,39 @@ public class StationsREST {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
+    @PUT
+    @Path("/airquality/{stationId}") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateStation(StationPOJO stationPOJO, @PathParam("stationId") String stationId) {
+        for (StationPOJO station : stations) {
+            if (station.getStationId().equals(stationId))
+            {
+                station = stationPOJO;
+                return Response.ok(station, MediaType.APPLICATION_JSON).build();
+            }
+        }
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+
+
+//    @PUT
+//    @Path("/substances/{id}") //update subs o podanym id
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response modifySubstance(SubstancePOJO substancePOJO, @PathParam("id") String id) {
+//        for (int i = 0; i < substances.size(); i++) {
+//            if (substances.get(i).getSubstanceId().equals(id)) {
+//                substances.get(i).setSubstanceId(substancePOJO.getSubstanceId());
+//                substances.get(i).setSubstanceName(substancePOJO.getSubstanceName());
+//                substances.get(i).setUnit(substancePOJO.getUnit());
+//                substances.get(i).setTreshold(substancePOJO.getTreshold());
+//                updateEmulatorAndStacjeBadawczeSubstancesLibrary();
+//                return Response.ok(substances.get(i), MediaType.APPLICATION_JSON).build();
+//            }
+//        }
+//        return Response.status(Response.Status.NO_CONTENT).build();
+//    }
+
     @GET
     @Path("/airquality/{stationId}/substance/{substanceId}")
     //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
@@ -78,6 +112,25 @@ public class StationsREST {
         }
         return Response.status(Response.Status.NO_CONTENT).build();
     }
+
+    @PATCH
+    @Path("/airquality/{stationId}/substance/{substanceId}")
+    //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSubstance(SubstancePOJO substance, @PathParam("stationId") String stationId, @PathParam("substanceId") String substanceId) {
+        for (StationPOJO stationPOJO : stations) {
+            if (stationPOJO.getStationId().equals(stationId)) {
+                for (SubstancePOJO substancePOJO : stationPOJO.getSubstances()) {
+                    if (substancePOJO.getType().equals(substanceId)) {
+                        substancePOJO.setValue(substance.getValue());
+                        return Response.ok(substancePOJO, MediaType.APPLICATION_JSON).build();
+                    }
+                }
+            }
+        }
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
 
     @POST
     @Path("/airquality/{stationId}") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
