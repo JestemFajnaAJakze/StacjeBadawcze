@@ -32,20 +32,59 @@ public class StationsREST {
     @Path("/airquality") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStations() {
-        return Response.ok(stations, MediaType.APPLICATION_JSON).build();
+        if (stations.isEmpty()){
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }else {
+            return Response.ok(stations, MediaType.APPLICATION_JSON).build();
+        }
     }
-//    @GET
-//    @Path("/airquality/{stationId") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getStations(@PathParam("stationId")String stationId) {
-//        return Response.ok(stations, MediaType.APPLICATION_JSON).build();
-//    }
+
+    @GET
+    @Path("/literary-substances") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getLiterarySubstances() {
+        if (literarySubstances.isEmpty()){
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }else {
+            return Response.ok(literarySubstances, MediaType.APPLICATION_JSON).build();
+        }
+    }
+
+    @GET
+    @Path("/airquality/{stationId}") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStation(@PathParam("stationId") String stationId) {
+        for (StationPOJO stationPOJO : stations) {
+            if (stationPOJO.getStationId().equals(stationId)) {
+                return Response.ok(stationPOJO, MediaType.APPLICATION_JSON).build();
+            }
+        }
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    @GET
+    @Path("/airquality/{stationId}/substance/{substanceId}")
+    //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSubstance(@PathParam("stationId") String stationId, @PathParam("substanceId") String substanceId) {
+        for (StationPOJO stationPOJO : stations) {
+            if (stationPOJO.getStationId().equals(stationId)) {
+                for (SubstancePOJO substancePOJO : stationPOJO.getSubstances()) {
+                    if (substancePOJO.getType().equals(substanceId)) {
+                        return Response.ok(substancePOJO, MediaType.APPLICATION_JSON).build();
+                    }
+                }
+            }
+        }
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
     @POST
     @Path("/airquality/{stationId}") //dodaje dane dla stacji pomiarowej o wskazanym id. - to wywołuje emulator
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createStation(@PathParam("stationId")String stationId, StationPOJO stationPOJO) {
+    public Response createStation(@PathParam("stationId") String stationId, StationPOJO stationPOJO) {
         System.out.println("Otrzymano dane pomiarowe"); //TODO nadpisywanie danych o stacjach
-        if(stationId.isEmpty() || stationPOJO.getStationAddress() == null || stationPOJO.getSubstances().isEmpty()){
+        if (stationId.isEmpty() || stationPOJO.getStationAddress() == null || stationPOJO.getSubstances().isEmpty()) {
             return Response.status(Response.Status.NO_CONTENT).build();
         } else {
             for (StationPOJO station : stations) {
@@ -64,24 +103,24 @@ public class StationsREST {
     @Path("/literary-substances") //nadpisuje słownik substancjigg
     @Produces(MediaType.APPLICATION_JSON)
     public Response createStation(List<LiterarySubstancePOJO> literarySubstancesToUpdate) {
-        for (LiterarySubstancePOJO literarySubstanceToUpdate : literarySubstancesToUpdate){
+        for (LiterarySubstancePOJO literarySubstanceToUpdate : literarySubstancesToUpdate) {
             boolean isLiterarySubstanceExist = false;
-            for (LiterarySubstancePOJO literarySubstance : literarySubstances){
-                if(literarySubstance.getSubstanceId().equals(literarySubstanceToUpdate.getSubstanceId())){
+            for (LiterarySubstancePOJO literarySubstance : literarySubstances) {
+                if (literarySubstance.getSubstanceId().equals(literarySubstanceToUpdate.getSubstanceId())) {
                     literarySubstance.setSubstanceName(literarySubstanceToUpdate.getSubstanceName());
                     literarySubstance.setUnit(literarySubstanceToUpdate.getUnit());
                     literarySubstance.setTreshold(literarySubstanceToUpdate.getTreshold());
                     isLiterarySubstanceExist = true;
                 }
             }
-            if(!isLiterarySubstanceExist){
+            if (!isLiterarySubstanceExist) {
                 literarySubstances.add(literarySubstanceToUpdate);
             }
         }
 
 
-        for (LiterarySubstancePOJO literarySubstance : literarySubstances){
-            System.out.println(literarySubstance.getSubstanceId()  + " " + literarySubstance.getSubstanceName());
+        for (LiterarySubstancePOJO literarySubstance : literarySubstances) {
+            System.out.println(literarySubstance.getSubstanceId() + " " + literarySubstance.getSubstanceName());
         }
 
         return Response.status(Response.Status.CREATED).build();
@@ -96,17 +135,21 @@ public class StationsREST {
             for (SubstancePOJO substance : station.getSubstances()) {
                 LiterarySubstancePOJO literarySubstance = null;
                 for (LiterarySubstancePOJO literarySubstancePOJO : literarySubstances) {
-                    if(literarySubstancePOJO.getSubstanceId().equals(substance.getType())){
+                    if (literarySubstancePOJO.getSubstanceId().equals(substance.getType())) {
                         literarySubstance = literarySubstancePOJO;
                         break;
                     }
                 }
-                if(substance.getValue() > literarySubstance.getTreshold()){
+                if (substance.getValue() > literarySubstance.getTreshold()) {
                     alarmStations.add(station);
                     break;
                 }
             }
         }
-        return Response.ok(alarmStations, MediaType.APPLICATION_JSON).build();
+        if(alarmStations.isEmpty()){
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }else {
+            return Response.ok(alarmStations, MediaType.APPLICATION_JSON).build();
+        }
     }
 }
