@@ -70,7 +70,9 @@ public class StationsREST {
         for (StationPOJO station : stations) {
             if (station.getStationId().equals(stationId))
             {
-                station = stationPOJO;
+                station.setStationId(stationPOJO.getStationId());
+                station.setStationAddress(stationPOJO.getStationAddress());
+                station.setSubstances(stationPOJO.getSubstances());
                 return Response.ok(station, MediaType.APPLICATION_JSON).build();
             }
         }
